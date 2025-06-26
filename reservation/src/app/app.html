@@ -1,0 +1,86 @@
+<mat-toolbar color="primary">
+  <span>Conservation Area Reservation</span>
+</mat-toolbar>
+
+<div class="main-container">
+  <mat-form-field appearance="fill" style="width: 100%;">
+    <input matInput placeholder="Enter your name" [(ngModel)]="name" />
+  </mat-form-field>
+
+  <h3>Select Area</h3>
+  <mat-button-toggle-group
+    [(ngModel)]="selectedArea"
+    appearance="legacy"
+    class="toggle-group"
+  >
+    <mat-button-toggle
+      *ngFor="let area of conservationAreas"
+      [value]="area"
+      [disabled]="isSlotReserved(area, selectedSlot)"
+      (click)="onAreaSelect(area)"
+      [class.selected]="selectedArea === area"
+    >
+      {{ area }}
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <h3>Select Time Slot</h3>
+  <mat-button-toggle-group
+    [(ngModel)]="selectedSlot"
+    appearance="legacy"
+    class="toggle-group"
+  >
+    <mat-button-toggle
+      *ngFor="let slot of timeSlots"
+      [value]="slot"
+      [disabled]="isSlotReserved(selectedArea, slot)"
+      (click)="onSlotSelect(slot)"
+      [class.selected]="selectedSlot === slot"
+    >
+      {{ slot }}
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <div *ngIf="message" class="message-box">
+    {{ message }}
+  </div>
+
+  <div class="button-wrapper">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="addReservation()"
+      [disabled]="!canAddReservation()"
+    >
+      Reserve
+    </button>
+  </div>
+
+  <h3>Reservations</h3>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 reservation-table">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let element"> {{ element.name }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="area">
+      <th mat-header-cell *matHeaderCellDef> Area </th>
+      <td mat-cell *matCellDef="let element"> {{ element.area }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="timeSlot">
+      <th mat-header-cell *matHeaderCellDef> Time Slot </th>
+      <td mat-cell *matCellDef="let element"> {{ element.timeSlot }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef> Actions </th>
+      <td mat-cell *matCellDef="let element; let i = index">
+        <button mat-button class="cancel-btn" (click)="cancelReservation(i)">Cancel</button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumnsWithActions"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumnsWithActions"></tr>
+  </table>
+</div>
